@@ -1,16 +1,23 @@
-import { DUMMY_NEWS } from '@/dummy-news';
 import { notFound } from 'next/navigation';
-import ImageScreen from '@/components/image-screen/ImageScreen';
+import ModalBackdrop from '@/components/image-screen/ModalBackdrop';
+import { getNewsItem } from '@/lib/news';
 
 export default async function InterceptedImagePage({ params }) {
   const { id: newsItemId } = await params;
-  const newsItem = DUMMY_NEWS.find((newItem) => newItem.slug === newsItemId);
+  const newsItem = await getNewsItem(newsItemId);
 
   if (!newsItem) {
     notFound();
   }
 
   return (
-    <ImageScreen imageUrl={newsItem.image} imageAltText={newsItem.title} />
+    <>
+      <ModalBackdrop />
+      <dialog className="modal" open>
+        <div className="fullscreen-image">
+          <img src={`/images/news/${newsItem.image}`} alt={newsItem.title} />
+        </div>
+      </dialog>
+    </>
   );
 }
